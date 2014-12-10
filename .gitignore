@@ -1,0 +1,4 @@
+sm/__init__.py
+images/*
+*.json
+*.pyc
