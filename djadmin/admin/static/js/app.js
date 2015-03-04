@@ -142,11 +142,11 @@ function filterarg(post_list_view, filter_config){
 //            };
 //        }
 
-        var app = new Application('亲子活动') // application main title
+        var app = new Application('Article') // application main title
             .baseApiUrl('http://xianpeng.org:5000/'); // main API endpoint
 
         // define all entities at the top to allow references between them
-        var post = new Entity('posts').label('活动'); // the API endpoint for posts will be http://localhost:3000/posts/:id
+        var post = new Entity('posts').label('Article'); // the API endpoint for posts will be http://localhost:3000/posts/:id
 
 
         var tag = new Entity('tags').label('分类')
@@ -162,7 +162,7 @@ function filterarg(post_list_view, filter_config){
         //     .order(1); // post should be the first item in the sidebar menu
 
         post.dashboardView()
-            .title('最近的活动')
+            .title('article')
             .totalItems(totalItems)
             .interceptor(interceptor)
             .order(1)
@@ -179,17 +179,17 @@ function filterarg(post_list_view, filter_config){
         var post_list_view = post.listView()
             .totalItems(totalItems)
             .interceptor(interceptor)
-            .title('所有的活动') // default title is "List of [entity_name]s"
+            .title('title') // default title is "List of [entity_name]s"
             .perPage(10)
             .pagination(pagination)
             .addField(new Field('index').label('序号').isDetailLink(true))
             .addField(new Field('title').label('标题').map(truncate)) // the default list field type is "string", and displays as a string
-            .addField(new Field('age_range').label('适合年龄'))
-            .addField(new Field('can_join').label('能否报名').type('boolean'))
-            .addField(new Field('apply_start').label('报名开始').map(date_format))
-            .addField(new Field('apply_end').label('报名结束').map(date_format))
-            .addField(new Field('address').label('地址').map(truncate))
-            .addField(new Field('price').type('wysiwyg').label('价格'))
+        //    .addField(new Field('age_range').label('适合年龄'))
+         //   .addField(new Field('can_join').label('能否报名').type('boolean'))
+          //  .addField(new Field('apply_start').label('报名开始').map(date_format))
+        //    .addField(new Field('apply_end').label('报名结束').map(date_format))
+            //.addField(new Field('address').label('地址').map(truncate))
+          //  .addField(new Field('price').type('wysiwyg').label('价格'))
             .addField(new Field('status').label('状态'))
             .addField(new ReferenceMany('cat') // a Reference is a particular type of field that references another entity
                 .targetEntity(tag) // the tag entity is defined later in this file
@@ -204,10 +204,9 @@ function filterarg(post_list_view, filter_config){
 		    };
 		});
         var filter_config = {
-            '父母邦': 'fumubang',
-            '哈哈儿童': 'haha',
-            '爱早教': 'izaojiao',
-            '玩童会': 'bbeden'
+            'Python': 'python',
+            'Javascript': 'js',
+            'Postgresql': 'postgres'
             };
         filterarg(post_list_view, filter_config);
 //	                var now = new Date(),
@@ -221,12 +220,6 @@ function filterarg(post_list_view, filter_config){
              .title('"{{ entry.values.title }}"')
             .addField(new Field('id'))
             .addField(new Field('title').label('标题'))
-            .addField(new Field('age_range').label('适合年龄'))
-            .addField(new Field('price').label('价格'))
-            .addField(new Field('act_time_desc').label('活动时间描述'))
-            .addField(new Field('apply_start').label('报名开始').map(date_format))
-            .addField(new Field('apply_end').label('报名结束').map(date_format))
-            .addField(new Field('orig_apply_time_str').label('报名截止时间'))
             .addField(new Field('brief').label('简介'))
             .addField(new Field('content').type('text').label('内容'))
             .addField(new Field('body').type('wysiwyg').label('主体'))
@@ -241,21 +234,21 @@ function filterarg(post_list_view, filter_config){
              );
 
         post.creationView()
-            .title('创建活动')
+            .title('创建Article')
             .addField(new Field('title').label("标题")) // the default edit field type is "string", and displays as a text input
-            .addField(new Field('content').type('wysiwyg').label('内容')) // overriding the type allows rich text editing for the body
+            .addField(new Field('link').label("link"))
+            .addField(new Field('content').type('text').label('内容')) // overriding the type allows rich text editing for the body
 
         post.editionView()
             .title('编辑 "{{ entry.values.title }}"') // title() accepts a template string, which has access to the entry
             .actions(['list', 'show', 'delete']) // choose which buttons appear in the action bar
             .addField(new Field('title').label("标题"))
-            .addField(new Field('price').label('价格'))
-            .addField(new Field('age_range').label('适合年龄'))
-            .addField(new Field('act_time_desc').label('活动时间描述'))
+            .addField(new Field('link').label("link"))
+            .addField(new Field('cat').label("Cat"))
             .addField(new Field('brief').label('简介'))
             .addField(new Field('content').type('text').label('内容'))
             .addField(new Field('body').type('wysiwyg').label('主体'))
-            .addField(new Reference('cat').label("分类")
+            .addField(new Reference('cate').label("分类")
                 .targetEntity(tag)
                 .targetField(new Field('title')));
 

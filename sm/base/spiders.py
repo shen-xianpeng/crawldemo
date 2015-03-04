@@ -1,5 +1,4 @@
 import scrapy
-from sm.items import BbedenItem
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor as sle
 

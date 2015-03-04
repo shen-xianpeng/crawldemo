@@ -12,17 +12,28 @@ import pymongo
 MONGO_HOST = '127.0.0.1'
 MONGO_PORT = 27017
 connection = pymongo.Connection(MONGO_HOST, MONGO_PORT)
-db = connection['outdoor']
-haha_col = db['event']
+db = connection['crawl']
+haha_col = db['blog']
 
-evt_cat_col = connection['outdoor']['scene_cat']
+evt_cat_col = connection['crawl']['blog_cat']
+
+
+incr_id_col = connection['crawl']['blog_id']
+def get_next_seq(name):
+    result = incr_id_col.find_and_modify(
+        {'_id':name},
+        {'$inc':{'seq':1}},
+        upsert=True,
+        new=True,
+        full_response=True
+        )
+    print result
+    return result['value']['seq']
 
 class PostApi(Endpoint):
     required_fields = {
         'title':'标题',
         'content':'内容',
-        'age_range':'年龄段',
-        'price':'价格'
         }
     
     def _validate(self, data):
@@ -87,14 +98,21 @@ class PostApi(Endpoint):
             return self._get_one(post_id)
 
     def delete(self, request, post_id):
-        post = haha_col.find_one({'_id':ObjectId(post_id)})
-        post['id'] = str(post.pop('_id'))
+        result = haha_col.find_and_modify(
+                {'_id':int(post_id)},
+                {'$set':{'status':-1}},
+                full_response=True, new=True
+                )
+        post = result['value']
+        if not post:
+            raise
         return jsonify(post)
 
     def post(self, request):
         data = request.data
         self._validate(data)
-        convert_int(data, 'cat')
+        #convert_int(data, 'cat')
+        data['_id'] = get_next_seq('blog')+100
         haha_col.insert(
             data,
             safe=True
@@ -104,13 +122,16 @@ class PostApi(Endpoint):
 
     def put(self, request, post_id):
         data = request.data;
+        print data
         self._validate(data)
-        convert_int(data, 'cat')
-        if data.pop('id')!=post_id:
+        print type(data[u'id']), type(post_id)
+        print data[u'id'], post_id
+        print data[u'id']==post_id
+        if data[u'id']!=post_id:
             raise
-        print '123'
+        convert_int(data, u'id')
         result = haha_col.find_and_modify(
-                {'_id':ObjectId(post_id)},
+                {'_id':int(post_id)},
                 {'$set':data},
                 full_response=True, new=True
                 )

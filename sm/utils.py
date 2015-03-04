@@ -69,18 +69,6 @@ def convert_str_to_float_pair(to_match_str):
         traceback.print_exc()
 
 
-def get_apply_date(to_match_str):
-    match = apply_time_pattern.search(to_match_str)
-    if not match: return {}
-    return match.groupdict()
-
-
-def get_activity_date(to_match_str):
-    match = activity_time_pattern.search(to_match_str)
-    if not match: return {}
-    return match.groupdict()
-
-
 def get_timedict_float(timedict, prefix=None, guess_current_year=True):
     assert prefix!=None
     current_time = int(time.time()) ; year, month = get_year_month(current_time)
@@ -141,34 +129,6 @@ def get_age_range(age_range_str):
     print 'retry'
     match = age_range_p.search(age_range_str) if age_range_str else None
     if match: return match.groupdict()
-
-# baby_ages 1:0-1岁 1:1-3岁 2:3-6岁 3:6岁以上
-baby_age_x = [1,3,6,100000000]
-
-import bisect
-def get_left(age):
-    return bisect.bisect_left(baby_age_x, age-0.0001)+1
-
-def get_right(age):
-    return bisect.bisect_left(baby_age_x, age+0.0001)+1
-
-def get_age_range_type(age_range_str):
-    d = get_age_range(age_range_str) or {}
-    if 'age_up' in d:
-        age_up = float(float((d['age_up'])))
-        index = get_left(age_up)
-        print index
-        return range(index, 5)
-    elif 'age_start' in d:
-        age_start = float(d['age_start'])
-        age_end = float(d['age_end'])
-        left = get_left(age_start)
-        right = get_right(age_end)
-        print left, right
-        print baby_age_x
-        return range(left, right+1)
-    return []
-
 
 
 

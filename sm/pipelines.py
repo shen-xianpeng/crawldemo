@@ -9,9 +9,9 @@ from sm.utils import hash_item_fields
 
 item_hash_key_set_name = 'duplicate_check_sign_set'
 
-col = connection['outdoor']['auto_increment']
+incr_id_col = connection['crawl']['blog_id']
 def get_next_seq(name):
-    result = col.find_and_modify(
+    result = incr_id_col.find_and_modify(
         {'_id':name},
         {'$inc':{'seq':1}},
         upsert=True,
@@ -27,7 +27,7 @@ def get_id_query(item):
 
 class MongoDBPipeline(object):
     def __init__(self):
-        self.db = connection['outdoor']
+        self.db = connection['crawl']
 
     def save_or_update(self, collection, item, spider):
         try:
@@ -43,7 +43,7 @@ class MongoDBPipeline(object):
             item['add_time'] = current_time
             item['status'] = -10
             item['source_cat'] = source_cat
-            item['_id'] = get_next_seq('event')
+            item['_id'] = get_next_seq('blog')+100
             id = collection.insert(item, safe=True)
             REDIS_SERVER.sadd(item_hash_key_set_name, item_key)
         except pymongo.errors.DuplicateKeyError as e:
@@ -66,8 +66,6 @@ class MongoDBPipeline(object):
             )
         
     def get_collection(self, name):
-        print name
-        assert name=='event'
         return self.db[name]
 
     def get_cat_name(self, item):
@@ -76,6 +74,6 @@ class MongoDBPipeline(object):
         return col_name
 
     def process_item(self, item, spider):
-        col = self.get_collection('event')
+        col = self.get_collection('blog')
         self.save_or_update(col, item, spider)
         return item

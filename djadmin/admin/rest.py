@@ -123,6 +123,8 @@ class Endpoint(View):
             r['message'] = ex.mesg or r.get('message')
             return jsonify(r)
         except:
+            import traceback
+            traceback.print_exc()
             r = {'success': False, 'message':'服务器挂了... 请稍等'}
             return jsonify(r)          
         return response
